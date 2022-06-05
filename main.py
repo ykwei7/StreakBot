@@ -1,4 +1,6 @@
 import os
+import json
+from venv import create
 from dotenv import load_dotenv
 import telebot
 from telebot.types import (
@@ -7,10 +9,13 @@ from telebot.types import (
     InlineKeyboardMarkup,
     InlineQueryResultCachedSticker,
 )
+from habit import Habit
 
 load_dotenv("secret.env")
 API_KEY = os.getenv("API_KEY")
 bot = telebot.TeleBot(API_KEY)
+
+user_id = "612160086"
 
 bot.set_my_commands([BotCommand("start", "Starts the bot")])
 
@@ -20,7 +25,7 @@ functionsMapping = {
     "delete": "Delete habit",
 }
 
-freqMapping = {"daily": "Daily", "weekly": "Weekly", "monthly": "Monthly"}
+freqMapping = {"daily": "Daily", "weekly": "Weekly"}
 
 
 @bot.message_handler(commands=["start"])
@@ -57,11 +62,6 @@ def help(message):
 
 @bot.callback_query_handler(func=lambda call: True)
 def handle_callback(call):
-    """
-      Handles the execution of the respective functions upon receipt of the
-    callback query
-    """
-
     user_id = call.from_user.id
     chat_id = call.message.chat.id
     data = call.data
@@ -71,64 +71,41 @@ def handle_callback(call):
         view_habits(user_id, chat_id)
         return
     elif data == functionsMapping["add"]:
-        add_habit(user_id, chat_id)
+        add_habit(chat_id)
         return
     elif data == functionsMapping["delete"]:
         delete_habit(user_id, chat_id)
-        return
-    elif data == freqMapping["daily"]:
-        return
-    elif data == freqMapping["weekly"]:
-        bot.send_message(chat_id, "weekly")
-        return
-    elif data == freqMapping["monthly"]:
-        bot.send_message(chat_id, "monthly")
         return
     else:
         bot.send_message(chat_id, err_msg)
 
 
-"""
-Functions to add habit
-"""
+@bot.message_handler(content_types=["text"])
+def add_habit(chat_id):
+    message = "What is the name of the habit that you hope to cultivate?"
+    msg = bot.send_message(chat_id, message)
+    bot.register_next_step_handler(msg, process_name_step)
+    return
 
 
 @bot.message_handler(content_types=["text"])
-def add_habit(user_id, chat_id):
-    message = "What is the name of the habit that you hope to cultivate?"
-    msg = bot.send_message(chat_id, message)
-    bot.register_next_step_handler(msg, desc_handler)
-
-
-def desc_handler(pm):
-    habit = Habit.createHabit()
-    habit.setText(pm.text)
-    msg = f"{pm.text} sounds like a great name! How should we describe this habit?"
-    sent_msg = bot.send_message(pm.chat.id, msg)
-    bot.register_next_step_handler(sent_msg, freq_handler, habit)
-
-
-def freq_handler(pm, habit):
-    desc = pm.text
-    habit.setDesc(desc)
-    msg = "How often should we have it?"
-    buttons = []
-    for key in freqMapping:
-        row = []
-        option = InlineKeyboardButton(freqMapping[key], callback_data=freqMapping[key])
-        row.append(option)
-        buttons.append(row)
-    bot.send_message(
-        pm.chat.id, msg, reply_markup=InlineKeyboardMarkup(buttons), parse_mode="HTML"
-    )
-
-
-"""
-End of functions to add habit
-"""
+def process_name_step(message):
+    name = message.text
+    chat_id = message.chat.id
+    habit = Habit()
+    habit.name = name
+    successMsg = f"habit {habit.name} is added"
+    # call function to add into DB
+    bot.send_message(chat_id, successMsg)
+    print(successMsg)
 
 
 def view_habits(user_id, chat_id):
+    f = open("./data/db.json")
+    data = json.load(f)
+    habits = [habit["name"] for habit in data[str(user_id)].values()]
+    msg = " ".join(habits)
+    bot.send_message(chat_id, msg)
     return
 
 
