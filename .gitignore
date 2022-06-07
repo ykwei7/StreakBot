@@ -1,2 +1,5 @@
 secret.env
 .vscode/
+backend/database.ini
+backend/__pycache__/
+__pycache__/
