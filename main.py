@@ -10,6 +10,7 @@ from telebot.types import (
     InlineQueryResultCachedSticker,
 )
 from habit import Habit
+from database import add_user
 
 load_dotenv("secret.env")
 API_KEY = os.getenv("API_KEY")
@@ -34,7 +35,7 @@ def start(message):
     Command that welcomes the user and adds userid to db
     """
     user_id = message.from_user.id
-    # add user_id to database
+    add_user(str(user_id))
     chat_id = message.chat.id
     message = "Welcome to Streak-o!"
 
@@ -94,7 +95,7 @@ def process_name_step(message):
     chat_id = message.chat.id
     habit = Habit()
     habit.name = name
-    successMsg = f"habit {habit.name} is added"
+    successMsg = f"Habit: {habit.name} is added"
     # call function to add into DB
     bot.send_message(chat_id, successMsg)
     print(successMsg)
@@ -110,6 +111,7 @@ def view_habits(user_id, chat_id):
 
 
 def delete_habit(user_id, chat_id):
+    # TODO Create function once DB is setup
     return
 
 
@@ -121,3 +123,16 @@ def delete_habit(user_id, chat_id):
 # good to have: edit habit object
 #
 bot.polling()
+
+
+# Users table
+# userID
+
+# Habit table
+# HabitID
+# userID FK
+# Habit Name varchar(20)
+# Habit desc TEXT
+# Habit freq varchar(20)
+# Habit time DATE
+# Habit streaks int

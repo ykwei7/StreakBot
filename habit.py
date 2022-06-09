@@ -6,14 +6,5 @@ class Habit:
         self.time = None
         self.streaks = 0
 
-
-def create_habit(msg):
-    bot.register_next_step_handler(msg, process_name_step)
-
-
-def process_name_step(message):
-    name = message.text
-    user_id = message.user_id
-    habit = Habit()
-    habit.name = name
-    print(f"habit {habit.name} is added to {user_id}")
+    def parseToDB(self):
+        return f"'{self.name}', '{self.desc}', '{self.freq}', TO_DATE('{self.time}', 'YYYYMMDD'), '{str(self.streaks)}'"
