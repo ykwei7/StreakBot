@@ -10,13 +10,13 @@ from telebot.types import (
     InlineQueryResultCachedSticker,
 )
 from habit import Habit
-from database import add_user
+from database import add_user, get_habits
 
 load_dotenv("secret.env")
 API_KEY = os.getenv("API_KEY")
 bot = telebot.TeleBot(API_KEY)
 
-user_id = "612160086"
+# user_id = "612160086"
 
 bot.set_my_commands([BotCommand("start", "Starts the bot")])
 
@@ -102,10 +102,9 @@ def process_name_step(message):
 
 
 def view_habits(user_id, chat_id):
-    f = open("./data/db.json")
-    data = json.load(f)
-    habits = [habit["name"] for habit in data[str(user_id)].values()]
-    msg = " ".join(habits)
+    data = get_habits(user_id)
+    habits = [Habit.formatStringFromDB(result) for result in data]
+    msg = "\n".join(habits)
     bot.send_message(chat_id, msg)
     return
 
@@ -122,6 +121,7 @@ def delete_habit(user_id, chat_id):
 # MVP: way to add Habit object, delete Habit object
 # good to have: edit habit object
 #
+print("Telegram bot running")
 bot.polling()
 
 
