@@ -55,7 +55,7 @@ def add_user(userId: str) -> str:
     Args:
         userId (str): telegram userID of intended user
     """
-    # TODO: Add exception when user is already added
+    # TODO: Add exception handling when user is already added
     try:
         params = config()
         conn = psycopg2.connect(**params)
@@ -71,7 +71,7 @@ def add_user(userId: str) -> str:
         print(error)
 
 
-def add_habit(habit: Habit, userId):
+def add_habit_to_db(habit: Habit, userId):
     try:
         params = config()
         conn = psycopg2.connect(**params)
@@ -79,14 +79,11 @@ def add_habit(habit: Habit, userId):
         paramList = [
             '"habitName"',
             '"desc"',
-            '"freq"',
-            '"startDate"',
-            '"numStreaks"',
+            '"reminderTime"',
             '"userID"',
         ]
         paramsListStr = ", ".join(param for param in paramList)
         add_habit_query = f'INSERT INTO "{SCHEMA}"."{HABITS}" ({paramsListStr}) VALUES ({habit.parseToDB()}, \'{str(userId)}\');'
-        print(add_habit_query)
         cur.execute(add_habit_query)
         conn.commit()
         print("Query was executed successfully.")
@@ -112,11 +109,10 @@ def get_habits(user_Id):
 if __name__ == "__main__":
     # x = view_habits("1")[1]
     # print(Habit.formatStringFromDB(x))
-    pass
+
     # habit = Habit()
     # habit.name = "name"
-    # habit.freq = "daily"
     # habit.desc = "test"
-    # habit.streaks = 0
-    # habit.time = "20201209"
-    # add_habit(habit, "123")
+    # habit.reminderTime = "08:00"
+    # add_habit(habit, "1")
+    print(get_habits("1"))
