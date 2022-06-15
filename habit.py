@@ -24,7 +24,7 @@ class Habit:
         return habit
 
     def parseToDB(self):
-        return f"'{self.name}', '{self.desc}', '{self.reminderTime}'"
+        return f"{self.name}, {self.desc}, {self.reminderTime}"
 
     @classmethod
     def formatStringFromDB(cls, dbResult):

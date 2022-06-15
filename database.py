@@ -36,7 +36,7 @@ def view_all_users():
         params = config()
         conn = psycopg2.connect(**params)
         cur = conn.cursor()
-        query = f'SELECT * FROM "{SCHEMA}".{USERS};'
+        query = f'SELECT * FROM "{SCHEMA}".{USERS}'
         cur.execute(query)
         result = cur.fetchall()
         print("Query was executed successfully.")
@@ -60,11 +60,10 @@ def add_user(userId: str) -> str:
         params = config()
         conn = psycopg2.connect(**params)
         cur = conn.cursor()
-        add_user_query = (
-            f'INSERT INTO "{SCHEMA}".{USERS} ("userID") VALUES (\'{userId}\');'
+        cur.execute(
+            'INSERT INTO "streakBotDB"."users" VALUES (%(userId)s)',
+            {"userId": userId},
         )
-        print(add_user_query)
-        cur.execute(add_user_query)
         conn.commit()
         print("Query was executed successfully.")
     except (Exception, psycopg2.DatabaseError) as error:
@@ -82,37 +81,66 @@ def add_habit_to_db(habit: Habit, userId):
             '"reminderTime"',
             '"userID"',
         ]
-        paramsListStr = ", ".join(param for param in paramList)
-        add_habit_query = f'INSERT INTO "{SCHEMA}"."{HABITS}" ({paramsListStr}) VALUES ({habit.parseToDB()}, \'{str(userId)}\');'
-        cur.execute(add_habit_query)
+        # paramsListStr = ", ".join(param for param in paramList)
+        cur.execute(
+            'INSERT INTO "streakBotDB"."habitsDB" ("habitName", "desc", "reminderTime", "userID") VALUES (%(habitName)s, %(desc)s, %(reminderTime)s, %(userId)s)',
+            {
+                "habitName": habit.name,
+                "desc": habit.desc,
+                "reminderTime": habit.reminderTime,
+                "userId": userId,
+            },
+        )
         conn.commit()
         print("Query was executed successfully.")
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
 
 
-def get_habits(user_Id):
+def get_habits(userId):
     try:
         params = config()
         conn = psycopg2.connect(**params)
         cur = conn.cursor()
-        view_habit_query = (
-            f'SELECT * FROM "{SCHEMA}"."{HABITS}" WHERE "userID"=\'{str(user_Id)}\''
+        cur.execute(
+            'SELECT * FROM "streakBotDB"."habitsDB" WHERE "userID" = %(userId)s',
+            {
+                "userId": userId,
+            },
         )
-        cur.execute(view_habit_query)
         result = cur.fetchall()
         return result
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
 
 
-if __name__ == "__main__":
-    # x = view_habits("1")[1]
-    # print(Habit.formatStringFromDB(x))
+def delete_habit_in_db(userId, habit):
+    try:
+        params = config()
+        conn = psycopg2.connect(**params)
+        cur = conn.cursor()
+        cur.execute(
+            'DELETE FROM "streakBotDB"."habitsDB" WHERE "userID" = %(userId)s AND "habitID" = %(habitID)s',
+            {
+                "habitID": habit[0],
+                "userId": userId,
+            },
+        )
+        conn.commit()
+        print("Query was executed successfully")
+        return
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+    return
 
-    # habit = Habit()
-    # habit.name = "name"
-    # habit.desc = "test"
-    # habit.reminderTime = "08:00"
-    # add_habit(habit, "1")
-    print(get_habits("1"))
+
+if __name__ == "__main__":
+    # x = get_habits("612160086")
+    # print(x)
+    # print(type(Habit.createHabit("test", "testdesc", "08:00")))
+    # add_habit_to_db(Habit.createHabit("test", "testdesc", "08:00"), "123")
+    # x = get_habits("123")[0]
+    # print(get_habits("123"))
+    # delete_habit_in_db("123", x)
+    # print(get_habits("123"))
+    pass

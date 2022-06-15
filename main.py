@@ -131,6 +131,7 @@ def view_habits(user_id, chat_id):
 @bot.message_handler(content_types=["text"])
 def delete_habit(user_id, chat_id):
     data = get_habits(user_id)
+    print(data)
     habits = [Habit.formatStringFromDB(result) for result in data]
     msg = "\n".join(habits)
     bot.send_message(chat_id, msg)
@@ -138,16 +139,22 @@ def delete_habit(user_id, chat_id):
         chat_id,
         "Which habit would you like to delete? Key in the corresponding number.",
     )
-    bot.register_next_step_handler(msg, delete_handler)
+    bot.register_next_step_handler(msg, delete_handler, data)
     return
 
 
-def delete_handler(pm):
+def delete_handler(pm, data):
     # TODO Implement habit id to be a composite key
     idx = pm.text
-    if not idx.isNumeric():
+    regex = re.compile("^\d+$")
+    if regex.match(idx) is None:
         bot.send_message(
             pm.chat.id, "This does not seem to be a valid number!\n\n Try again!"
+        )
+        return
+    elif int(idx) >= len(data):
+        bot.send_message(
+            pm.chat.id, "The index provided does not fall within the list!\n\n Try again!"
         )
         return
     chat_id = pm.chat.id
@@ -165,6 +172,7 @@ def delete_handler(pm):
 # MVP: way to add Habit object, delete Habit object
 # good to have: edit habit object
 #
+
 print("Telegram bot running")
 bot.polling()
 
