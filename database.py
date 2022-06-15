@@ -62,7 +62,7 @@ def add_user(userId: str) -> str:
         cur = conn.cursor()
         cur.execute(
             'INSERT INTO "streakBotDB"."users" VALUES (%(userId)s)',
-            {"userId": userId},
+            {"userId": str(userId)},
         )
         conn.commit()
         print("Query was executed successfully.")
@@ -88,7 +88,7 @@ def add_habit_to_db(habit: Habit, userId):
                 "habitName": habit.name,
                 "desc": habit.desc,
                 "reminderTime": habit.reminderTime,
-                "userId": userId,
+                "userId": str(userId),
             },
         )
         conn.commit()
@@ -105,7 +105,7 @@ def get_habits(userId):
         cur.execute(
             'SELECT * FROM "streakBotDB"."habitsDB" WHERE "userID" = %(userId)s',
             {
-                "userId": userId,
+                "userId": str(userId),
             },
         )
         result = cur.fetchall()
@@ -123,7 +123,7 @@ def delete_habit_in_db(userId, habit):
             'DELETE FROM "streakBotDB"."habitsDB" WHERE "userID" = %(userId)s AND "habitID" = %(habitID)s',
             {
                 "habitID": habit[0],
-                "userId": userId,
+                "userId": str(userId),
             },
         )
         conn.commit()

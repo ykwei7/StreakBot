@@ -10,7 +10,7 @@ from telebot.types import (
     InlineQueryResultCachedSticker,
 )
 from habit import Habit
-from database import add_user, get_habits, add_habit_to_db
+from database import add_user, delete_habit_in_db, get_habits, add_habit_to_db
 
 load_dotenv("secret.env")
 API_KEY = os.getenv("API_KEY")
@@ -121,20 +121,19 @@ def reminder_time_handler(pm, name, desc):
 
 
 def view_habits(user_id, chat_id):
-    data = get_habits(user_id)
+    data = get_habits(str(user_id))
+    if data is None:
+        bot.send_message(chat_id, "No habits found! Create a habit to start")
+        return
     habits = [Habit.formatStringFromDB(result) for result in data]
     msg = "\n".join(habits)
     bot.send_message(chat_id, msg)
-    return
+    return data
 
 
 @bot.message_handler(content_types=["text"])
 def delete_habit(user_id, chat_id):
-    data = get_habits(user_id)
-    print(data)
-    habits = [Habit.formatStringFromDB(result) for result in data]
-    msg = "\n".join(habits)
-    bot.send_message(chat_id, msg)
+    data = view_habits(user_id, chat_id)
     msg = bot.send_message(
         chat_id,
         "Which habit would you like to delete? Key in the corresponding number.",
@@ -144,24 +143,30 @@ def delete_habit(user_id, chat_id):
 
 
 def delete_handler(pm, data):
-    # TODO Implement habit id to be a composite key
     idx = pm.text
     regex = re.compile("^\d+$")
+    chat_id = pm.chat.id
+    user_id = pm.from_user.id
+
     if regex.match(idx) is None:
         bot.send_message(
             pm.chat.id, "This does not seem to be a valid number!\n\n Try again!"
         )
         return
-    elif int(idx) >= len(data):
+    elif int(idx) > len(data) or int(idx) <= 0:
         bot.send_message(
-            pm.chat.id, "The index provided does not fall within the list!\n\n Try again!"
+            pm.chat.id,
+            "The index provided does not fall within the list!\n\n Try again!",
         )
         return
-    chat_id = pm.chat.id
-    user_id = pm.from_user.id
+
+    deletedHabit = data[int(idx) - 1]
+    print(type(deletedHabit))
+    print(deletedHabit)
+    delete_habit_in_db(user_id, deletedHabit)
     bot.send_message(
         chat_id,
-        "Have deleted the following habit",
+        f"Have deleted the following habit:\n\n {Habit.formatHabitTuple(deletedHabit)}",
     )
 
 
