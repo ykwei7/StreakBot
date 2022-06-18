@@ -41,13 +41,16 @@ class Habit:
 
     def toString(self):
         result = ""
-        result += f"Name of habit: {self.name}\n"
-        result += f"Description: {self.desc}\n"
-        result += f"Reminder Time: {self.reminderTime.strftime('%H:%M')}\n"
-        result += f"Streaks: {str(self.streaks)}\n"
+        result += f"*Habit*: {self.name}\n"
+        result += f"*Description*: {self.desc}\n"
+        result += f"*Reminder Time*: {self.reminderTime.strftime('%H:%M')}\n"
+        result += f"*Streaks*: {str(self.streaks)}\n"
         return result
 
     @classmethod
     def formatHabitTuple(cls, habitTuple):
         habit = Habit.createHabitFromDB(habitTuple)
         return habit.toString()
+
+    def getReminderTime(self):
+        return self.reminderTime.strftime("%H:%M")

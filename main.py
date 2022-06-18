@@ -17,12 +17,13 @@ from database import (
     add_habit_to_db,
     update_habit,
 )
+import schedule
+from threading import Thread
+from time import sleep
 
 load_dotenv("secret.env")
 API_KEY = os.getenv("API_KEY")
 bot = telebot.TeleBot(API_KEY)
-
-# user_id = "612160086"
 
 bot.set_my_commands([BotCommand("start", "Starts the bot")])
 
@@ -109,13 +110,21 @@ def desc_handler(pm, name):
     desc = pm.text
     sent_msg = bot.send_message(
         pm.chat.id,
-        f"Got it! {name} : {desc}.\n\nWhat time would you like to receive the reminders? Please key it in an HH:MM format, for e.g 08:00",
+        f"Got it! *{name}: {desc}*.\n\nSet a daily reminder! Please key it in an HH:MM format, for e.g 08:00",
+        parse_mode="Markdown",
     )
     bot.register_next_step_handler(sent_msg, reminder_time_handler, name, desc)
 
 
+def schedule_checker():
+    while True:
+        schedule.run_pending()
+        sleep(60)
+
+
 def reminder_time_handler(pm, name, desc):
     time = pm.text
+    chat_id = pm.chat.id
     regex = re.compile("^(2[0-3]|[01]?[0-9]):([0-5]?[0-9])$")
     if regex.match(time) is None:
         bot.send_message(
@@ -125,8 +134,14 @@ def reminder_time_handler(pm, name, desc):
     habit = Habit.createHabit(name, desc, time)
     add_habit_to_db(habit, pm.from_user.id)
     bot.send_message(
-        pm.chat.id, f"Have created the following habit!\n\n{habit.toString()}"
+        pm.chat.id,
+        f"Have created the following habit!\n\n{habit.toString()}",
+        parse_mode="Markdown",
     )
+
+    reminderTime = habit.getReminderTime()
+    schedule.every().day.at(reminderTime).do(lambda: remind(habit, chat_id))
+    Thread(target=schedule_checker).start()
     return
 
 
@@ -135,9 +150,11 @@ def view_habits(user_id, chat_id):
     if len(data) == 0:
         bot.send_message(chat_id, "No habits found! Create a habit to start")
         return None
-    habits = [Habit.formatStringFromDB(result) for result in data]
+    habits = [
+        f"*#{str(i+1)}* " + Habit.formatStringFromDB(data[i]) for i in range(len(data))
+    ]
     msg = "\n".join(habits)
-    bot.send_message(chat_id, msg)
+    bot.send_message(chat_id, msg, parse_mode="Markdown")
     return data
 
 
@@ -177,6 +194,7 @@ def delete_handler(pm, data):
     bot.send_message(
         chat_id,
         f"Have deleted the following habit:\n\n{Habit.formatHabitTuple(deletedHabit)}",
+        parse_mode="Markdown",
     )
 
 
@@ -215,6 +233,15 @@ def streak_handler(pm, data):
     bot.send_message(
         chat_id,
         f"Have updated the following habit:\n\n{habitToBeUpdated.toString()}",
+        parse_mode="Markdown",
+    )
+
+
+def remind(habit: Habit, chat_id):
+    bot.send_message(
+        chat_id,
+        f"Remember to do your habit today!\n\n{habit.toString()}",
+        parse_mode="Markdown",
     )
 
 
