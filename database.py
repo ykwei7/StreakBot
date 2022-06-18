@@ -70,7 +70,7 @@ def add_user(userId: str) -> str:
         print(error)
 
 
-def add_habit_to_db(habit: Habit, userId):
+def add_habit_to_db(habit: Habit, userId: str):
     try:
         params = config()
         conn = psycopg2.connect(**params)
@@ -97,7 +97,7 @@ def add_habit_to_db(habit: Habit, userId):
         print(error)
 
 
-def get_habits(userId):
+def get_habits(userId: str):
     try:
         params = config()
         conn = psycopg2.connect(**params)
@@ -108,7 +108,10 @@ def get_habits(userId):
                 "userId": str(userId),
             },
         )
+        print("Fetching results..")
         result = cur.fetchall()
+        print("Fetched result")
+        print(result)
         return result
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)

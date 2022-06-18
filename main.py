@@ -88,7 +88,6 @@ def add_habit(chat_id):
 
 
 def name_handler(pm):
-    print(type(pm))
     name = pm.text
     sent_msg = bot.send_message(
         pm.chat.id,
@@ -110,7 +109,9 @@ def reminder_time_handler(pm, name, desc):
     time = pm.text
     regex = re.compile("^(2[0-3]|[01]?[0-9]):([0-5]?[0-9])$")
     if regex.match(time) is None:
-        bot.send_message(pm.chat.id, "Format of time is not correct!\n\n Try again!")
+        bot.send_message(
+            pm.chat.id, "Format of time is not correct!\n\n Try creating a habit again!"
+        )
         return
     habit = Habit.createHabit(name, desc, time)
     add_habit_to_db(habit, pm.from_user.id)
@@ -122,9 +123,9 @@ def reminder_time_handler(pm, name, desc):
 
 def view_habits(user_id, chat_id):
     data = get_habits(str(user_id))
-    if data is None:
+    if len(data) == 0:
         bot.send_message(chat_id, "No habits found! Create a habit to start")
-        return
+        return None
     habits = [Habit.formatStringFromDB(result) for result in data]
     msg = "\n".join(habits)
     bot.send_message(chat_id, msg)
@@ -134,6 +135,8 @@ def view_habits(user_id, chat_id):
 @bot.message_handler(content_types=["text"])
 def delete_habit(user_id, chat_id):
     data = view_habits(user_id, chat_id)
+    if data is None:
+        return
     msg = bot.send_message(
         chat_id,
         "Which habit would you like to delete? Key in the corresponding number.",
@@ -161,12 +164,10 @@ def delete_handler(pm, data):
         return
 
     deletedHabit = data[int(idx) - 1]
-    print(type(deletedHabit))
-    print(deletedHabit)
     delete_habit_in_db(user_id, deletedHabit)
     bot.send_message(
         chat_id,
-        f"Have deleted the following habit:\n\n {Habit.formatHabitTuple(deletedHabit)}",
+        f"Have deleted the following habit:\n\n{Habit.formatHabitTuple(deletedHabit)}",
     )
 
 
@@ -176,7 +177,6 @@ def delete_handler(pm, data):
 # int streaks, Time time
 # MVP: way to add Habit object, delete Habit object
 # good to have: edit habit object
-#
 
 print("Telegram bot running")
 bot.polling()
