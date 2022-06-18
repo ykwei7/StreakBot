@@ -1,8 +1,8 @@
 #!/usr/bin/python
 import psycopg2
-from requests import post
 from backend.config import config
 from habit import Habit
+from datetime import date
 
 SCHEMA = "streakBotDB"
 USERS = "users"
@@ -55,7 +55,6 @@ def add_user(userId: str) -> str:
     Args:
         userId (str): telegram userID of intended user
     """
-    # TODO: Add exception handling when user is already added
     try:
         params = config()
         conn = psycopg2.connect(**params)
@@ -75,12 +74,12 @@ def add_habit_to_db(habit: Habit, userId: str):
         params = config()
         conn = psycopg2.connect(**params)
         cur = conn.cursor()
-        paramList = [
-            '"habitName"',
-            '"desc"',
-            '"reminderTime"',
-            '"userID"',
-        ]
+        # paramList = [
+        #     '"habitName"',
+        #     '"desc"',
+        #     '"reminderTime"',
+        #     '"userID"',
+        # ]
         # paramsListStr = ", ".join(param for param in paramList)
         cur.execute(
             'INSERT INTO "streakBotDB"."habitsDB" ("habitName", "desc", "reminderTime", "userID") VALUES (%(habitName)s, %(desc)s, %(reminderTime)s, %(userId)s)',
@@ -108,10 +107,7 @@ def get_habits(userId: str):
                 "userId": str(userId),
             },
         )
-        print("Fetching results..")
         result = cur.fetchall()
-        print("Fetched result")
-        print(result)
         return result
     except (Exception, psycopg2.DatabaseError) as error:
         print(error)
@@ -137,13 +133,50 @@ def delete_habit_in_db(userId, habit):
     return
 
 
+def update_habit(userId: str, habit: Habit, field: str, newVal):
+    if field == "habitName":
+        pass
+    elif field == "desc":
+        pass
+    elif field == "reminderTime":
+        pass
+    elif field == "numStreaks":
+        update_streak(userId, habit, newVal)
+        return
+    pass
+
+
+def update_streak(userId, habit, newVal):
+    try:
+        params = config()
+        conn = psycopg2.connect(**params)
+        cur = conn.cursor()
+        cur.execute(
+            'UPDATE "streakBotDB"."habitsDB" SET "numStreaks" = %(newVal)s, "lastUpdated" = %(now)s  WHERE "userID" = %(userId)s AND "habitID" = %(habitID)s',
+            {
+                "habitID": habit[0],
+                "userId": str(userId),
+                "newVal": newVal,
+                "now": date.today(),
+            },
+        )
+        conn.commit()
+        print("Query was executed successfully")
+        return
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+    return
+
+
 if __name__ == "__main__":
     # x = get_habits("612160086")
     # print(x)
     # print(type(Habit.createHabit("test", "testdesc", "08:00")))
     # add_habit_to_db(Habit.createHabit("test", "testdesc", "08:00"), "123")
-    # x = get_habits("123")[0]
-    # print(get_habits("123"))
-    # delete_habit_in_db("123", x)
+    x = get_habits("123")[0]
+    print(get_habits("123"))
+    update_habit("123", x, "numStreaks", 1)
+    x = get_habits("123")[0]
+    print(get_habits("123"))
     # print(get_habits("123"))
     pass

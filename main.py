@@ -10,7 +10,13 @@ from telebot.types import (
     InlineQueryResultCachedSticker,
 )
 from habit import Habit
-from database import add_user, delete_habit_in_db, get_habits, add_habit_to_db
+from database import (
+    add_user,
+    delete_habit_in_db,
+    get_habits,
+    add_habit_to_db,
+    update_habit,
+)
 
 load_dotenv("secret.env")
 API_KEY = os.getenv("API_KEY")
@@ -24,6 +30,7 @@ functionsMapping = {
     "view": "View all habits",
     "add": "Add habit",
     "delete": "Delete habit",
+    "update": "Update streak",
 }
 
 
@@ -75,6 +82,8 @@ def handle_callback(call):
     elif data == functionsMapping["delete"]:
         delete_habit(user_id, chat_id)
         return
+    elif data == functionsMapping["update"]:
+        update_streak(user_id, chat_id)
     else:
         bot.send_message(chat_id, err_msg)
 
@@ -168,6 +177,44 @@ def delete_handler(pm, data):
     bot.send_message(
         chat_id,
         f"Have deleted the following habit:\n\n{Habit.formatHabitTuple(deletedHabit)}",
+    )
+
+
+@bot.message_handler(content_types=["text"])
+def update_streak(user_id, chat_id):
+    data = view_habits(user_id, chat_id)
+    if data is None:
+        return
+    message = "Which habit did you complete today? Key in the corresponding number"
+    msg = bot.send_message(chat_id, message)
+    bot.register_next_step_handler(msg, streak_handler, data)
+    return
+
+
+def streak_handler(pm, data):
+    idx = pm.text
+    regex = re.compile("^\d+$")
+    chat_id = pm.chat.id
+    user_id = pm.from_user.id
+
+    if regex.match(idx) is None:
+        bot.send_message(
+            pm.chat.id, "This does not seem to be a valid number!\n\n Try again!"
+        )
+        return
+    elif int(idx) > len(data) or int(idx) <= 0:
+        bot.send_message(
+            pm.chat.id,
+            "The index provided does not fall within the list!\n\n Try again!",
+        )
+        return
+    currentHabit = data[int(idx) - 1]
+    habitToBeUpdated = Habit.createHabitFromDB(currentHabit)
+    update_habit(str(user_id), currentHabit, "numStreaks", habitToBeUpdated.streaks + 1)
+    habitToBeUpdated.streaks += 1
+    bot.send_message(
+        chat_id,
+        f"Have updated the following habit:\n\n{habitToBeUpdated.toString()}",
     )
 
 

@@ -8,7 +8,7 @@ class Habit:
         self.desc = None
         self.reminderTime = None
         self.streaks = 0
-        # self.lastUpdatedTime = datetime.now()
+        self.lastUpdated = None
 
     @classmethod
     def createHabit(cls, name, desc, reminderTime):
@@ -17,7 +17,7 @@ class Habit:
         habit.desc = desc
         habit.reminderTime = datetime.strptime(reminderTime, "%H:%M")
         habit.streaks = 0
-        # habit.lastUpdatedTime = datetime.now()
+        habit.lastUpdated = None
         return habit
 
     @classmethod
@@ -28,7 +28,7 @@ class Habit:
         habit.desc = dbResult[2]
         habit.reminderTime = dbResult[3]  # datetime.strptime(dbResult[3], "%H:%M")
         habit.streaks = dbResult[4]
-        # habit.lastUpdatedTime = dbResult[5]
+        habit.lastUpdated = dbResult[5]
         return habit
 
     def parseToDB(self):
