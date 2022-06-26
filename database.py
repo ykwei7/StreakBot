@@ -168,6 +168,25 @@ def update_streak(userId, habit, newVal):
     return
 
 
+def clear_user_habits(userId):
+    try:
+        params = config()
+        conn = psycopg2.connect(**params)
+        cur = conn.cursor()
+        cur.execute(
+            'DELETE FROM "streakBotDB"."habitsDB" WHERE "userID" = %(userId)s',
+            {
+                "userId": str(userId),
+            },
+        )
+        conn.commit()
+        print("Query was executed successfully")
+        return
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+    return
+
+
 if __name__ == "__main__":
     # x = get_habits("612160086")
     # print(x)

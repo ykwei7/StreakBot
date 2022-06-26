@@ -16,16 +16,28 @@ from database import (
     get_habits,
     add_habit_to_db,
     update_habit,
+    clear_user_habits,
 )
 import schedule
 from threading import Thread
 from time import sleep
 
+
 load_dotenv("secret.env")
 API_KEY = os.getenv("API_KEY")
 bot = telebot.TeleBot(API_KEY)
 
-bot.set_my_commands([BotCommand("start", "Starts the bot")])
+bot.set_my_commands(
+    [
+        BotCommand("start", "Starts the bot"),
+        BotCommand("help", "Get list of commands"),
+        # BotCommand("add", "Add a habit"),
+        # BotCommand("delete", "Delete a habit"),
+        # BotCommand("view", "View all habits"),
+        # BotCommand("update", "Update a habit"),
+        BotCommand("clear", "Clears all habits"),
+    ]
+)
 
 functionsMapping = {
     "view": "View all habits",
@@ -145,6 +157,7 @@ def reminder_time_handler(pm, name, desc):
     return
 
 
+@bot.message_handler(content_types=["text"])
 def view_habits(user_id, chat_id):
     data = get_habits(str(user_id))
     if len(data) == 0:
@@ -243,6 +256,27 @@ def remind(habit: Habit, chat_id):
         f"Remember to do your habit today!\n\n{habit.toString()}",
         parse_mode="Markdown",
     )
+
+
+@bot.message_handler(content_types=["text"], commands=["clear"])
+def clear_all_habits(message):
+    chat_id = message.chat.id
+    msg = bot.send_message(
+        chat_id,
+        f"Would you like to clear all existing habits? Type 'YES' to clear all habits or 'NO' to cancel this action.",
+        parse_mode="Markdown",
+    )
+    bot.register_next_step_handler(msg, clear_all_handler)
+
+
+def clear_all_handler(msg):
+    if msg.text == "YES":
+        clear_user_habits(msg.from_user.id)
+        bot.send_message(msg.chat.id, "All habits have been cleared!")
+    else:
+        bot.send_message(
+            msg.chat.id, "Habits were not cleared successfully. Try again!"
+        )
 
 
 # upon setup, append to json file with userid
