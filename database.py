@@ -60,7 +60,7 @@ def add_user(userId: str) -> str:
         conn = psycopg2.connect(**params)
         cur = conn.cursor()
         cur.execute(
-            'INSERT INTO "streakBotDB"."users" VALUES (%(userId)s)',
+            'INSERT INTO "streakBotDB".users ("userID") VALUES (%(userId)s)',
             {"userId": str(userId)},
         )
         conn.commit()
@@ -192,10 +192,12 @@ if __name__ == "__main__":
     # print(x)
     # print(type(Habit.createHabit("test", "testdesc", "08:00")))
     # add_habit_to_db(Habit.createHabit("test", "testdesc", "08:00"), "123")
-    x = get_habits("123")[0]
-    print(get_habits("123"))
-    update_habit("123", x, "numStreaks", 1)
-    x = get_habits("123")[0]
-    print(get_habits("123"))
+    # x = get_habits("123")[0]
     # print(get_habits("123"))
+    # update_habit("123", x, "numStreaks", 1)
+    # x = get_habits("123")[0]
+    # print(get_habits("123"))
+    # # print(get_habits("123"))
+    # add_user("123")
+    print(view_all_users())
     pass
