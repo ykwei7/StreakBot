@@ -287,8 +287,8 @@ def clear_all_handler(msg):
 # MVP: way to add Habit object, delete Habit object
 # good to have: edit habit object
 
-# print("Telegram bot running")
-# bot.polling()
+print("Telegram bot running")
+bot.polling()
 
 server = Flask(__name__)
 
