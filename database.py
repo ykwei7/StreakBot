@@ -199,5 +199,7 @@ if __name__ == "__main__":
     # print(get_habits("123"))
     # # print(get_habits("123"))
     # add_user("123")
-    print(view_all_users())
+    # print(get_habits("123"))
+    # print(get_habits("612160086"))
+    # print(view_all_users())
     pass
