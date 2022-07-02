@@ -161,7 +161,7 @@ def reminder_time_handler(pm, name, desc):
 @bot.message_handler(content_types=["text"])
 def view_habits(user_id, chat_id):
     data = get_habits(str(user_id))
-    if len(data) == 0:
+    if data is None or len(data) == 0:
         bot.send_message(chat_id, "No habits found! Create a habit to start")
         return None
     habits = [
