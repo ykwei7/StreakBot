@@ -290,7 +290,7 @@ def clear_all_handler(msg):
 print("Telegram bot running")
 bot.infinity_polling()
 
-server = Flask(__name__)
+# server = Flask(__name__)
 
 
 # @server.route("/" + API_KEY, methods=["POST"])
