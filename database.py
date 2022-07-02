@@ -16,7 +16,7 @@ def connect():
         # read connection parameters
         params = config()
         print("Connecting to the PostgreSQL database...")
-        conn = psycopg2.connect(**params)
+        conn = psycopg2.connect(params)
         cur = conn.cursor()
         print("PostgreSQL database version:")
         cur.execute("SELECT version()")
@@ -34,7 +34,7 @@ def connect():
 def view_all_users():
     try:
         params = config()
-        conn = psycopg2.connect(**params)
+        conn = psycopg2.connect(params)
         cur = conn.cursor()
         query = f'SELECT * FROM "{SCHEMA}".{USERS}'
         cur.execute(query)
@@ -57,7 +57,7 @@ def add_user(userId: str) -> str:
     """
     try:
         params = config()
-        conn = psycopg2.connect(**params)
+        conn = psycopg2.connect(params)
         cur = conn.cursor()
         cur.execute(
             'INSERT INTO "streakBotDB".users ("userID") VALUES (%(userId)s)',
@@ -72,7 +72,7 @@ def add_user(userId: str) -> str:
 def add_habit_to_db(habit: Habit, userId: str):
     try:
         params = config()
-        conn = psycopg2.connect(**params)
+        conn = psycopg2.connect(params)
         cur = conn.cursor()
         # paramList = [
         #     '"habitName"',
@@ -99,7 +99,7 @@ def add_habit_to_db(habit: Habit, userId: str):
 def get_habits(userId: str):
     try:
         params = config()
-        conn = psycopg2.connect(**params)
+        conn = psycopg2.connect(params)
         cur = conn.cursor()
         cur.execute(
             'SELECT * FROM "streakBotDB"."habitsDB" WHERE "userID" = %(userId)s',
@@ -116,7 +116,7 @@ def get_habits(userId: str):
 def delete_habit_in_db(userId, habit):
     try:
         params = config()
-        conn = psycopg2.connect(**params)
+        conn = psycopg2.connect(params)
         cur = conn.cursor()
         cur.execute(
             'DELETE FROM "streakBotDB"."habitsDB" WHERE "userID" = %(userId)s AND "habitID" = %(habitID)s',
@@ -149,7 +149,7 @@ def update_habit(userId: str, habit: Habit, field: str, newVal):
 def update_streak(userId, habit, newVal):
     try:
         params = config()
-        conn = psycopg2.connect(**params)
+        conn = psycopg2.connect(params)
         cur = conn.cursor()
         cur.execute(
             'UPDATE "streakBotDB"."habitsDB" SET "numStreaks" = %(newVal)s, "lastUpdated" = %(now)s  WHERE "userID" = %(userId)s AND "habitID" = %(habitID)s',
@@ -171,7 +171,7 @@ def update_streak(userId, habit, newVal):
 def clear_user_habits(userId):
     try:
         params = config()
-        conn = psycopg2.connect(**params)
+        conn = psycopg2.connect(params)
         cur = conn.cursor()
         cur.execute(
             'DELETE FROM "streakBotDB"."habitsDB" WHERE "userID" = %(userId)s',

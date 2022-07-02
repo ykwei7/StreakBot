@@ -1,22 +1,24 @@
 #!/usr/bin/python
 from configparser import ConfigParser
+import os
 
 
-def config(filename="backend/database.ini", section="postgresql"):
+def config():
     # create a parser
-    parser = ConfigParser()
-    # read config file
-    parser.read(filename)
+    # parser = ConfigParser()
+    # # read config file
+    # parser.read(filename)
 
-    # get section, default to postgresql
-    db = {}
-    if parser.has_section(section):
-        params = parser.items(section)
-        for param in params:
-            db[param[0]] = param[1]
-    else:
-        raise Exception(
-            "Section {0} not found in the {1} file".format(section, filename)
-        )
+    # # get section, default to postgresql
+    # db = {}
+    # if parser.has_section(section):
+    #     params = parser.items(section)
+    #     for param in params:
+    #         db[param[0]] = param[1]
+    # else:
+    #     raise Exception(
+    #         "Section {0} not found in the {1} file".format(section, filename)
+    #     )
 
-    return db
+    DATABASE_URL = os.environ.get("DATABASE_URL")
+    return DATABASE_URL
