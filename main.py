@@ -22,7 +22,8 @@ from flask import Flask, request
 import schedule
 from threading import Thread
 from time import sleep
-
+import os
+import re
 
 load_dotenv("secret.env")
 API_KEY = os.getenv("API_KEY")
@@ -259,7 +260,7 @@ def remind(habit: Habit, chat_id):
     )
 
 
-@bot.message_handler(content_types=["text"], commands=["clear"])
+@bot.message_handler(commands=["clear"])
 def clear_all_habits(message):
     chat_id = message.chat.id
     msg = bot.send_message(
