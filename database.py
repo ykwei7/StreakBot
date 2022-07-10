@@ -113,6 +113,18 @@ def get_habits(userId: str):
         print(error)
 
 
+def get_all_habits():
+    try:
+        params = config()
+        conn = psycopg2.connect(params)
+        cur = conn.cursor()
+        cur.execute('SELECT * FROM "streakBotDB"."habitsDB"')
+        result = cur.fetchall()
+        return result
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+
+
 def delete_habit_in_db(userId, habit):
     try:
         params = config()

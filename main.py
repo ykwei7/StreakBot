@@ -17,6 +17,7 @@ from database import (
     add_habit_to_db,
     update_habit,
     clear_user_habits,
+    get_all_habits,
 )
 from flask import Flask, request
 import schedule
@@ -24,6 +25,7 @@ from threading import Thread
 from time import sleep
 import os
 import re
+
 
 load_dotenv("secret.env")
 API_KEY = os.getenv("API_KEY")
@@ -133,7 +135,7 @@ def desc_handler(pm, name):
 def schedule_checker():
     while True:
         schedule.run_pending()
-        sleep(60)
+        sleep(50)
 
 
 def reminder_time_handler(pm, name, desc):
@@ -154,7 +156,8 @@ def reminder_time_handler(pm, name, desc):
     )
 
     reminderTime = habit.getReminderTime()
-    schedule.every().day.at(reminderTime).do(lambda: remind(habit, chat_id))
+    print(reminderTime)
+    schedule.every(10).seconds.do(lambda: remind(habit, chat_id))
     Thread(target=schedule_checker).start()
     return
 
@@ -282,4 +285,4 @@ def clear_all_handler(msg):
 
 
 print("Telegram bot running")
-bot.infinity_polling()
+bot.polling()
