@@ -157,7 +157,7 @@ def reminder_time_handler(pm, name, desc):
 
     reminderTime = habit.getReminderTime()
     print(reminderTime)
-    schedule.every(10).seconds.do(lambda: remind(habit, chat_id))
+    schedule.every(20).seconds.do(lambda: remind(habit, chat_id))
     Thread(target=schedule_checker).start()
     return
 
