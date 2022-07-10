@@ -135,7 +135,7 @@ def desc_handler(pm, name):
 def schedule_checker():
     while True:
         schedule.run_pending()
-        sleep(50)
+        sleep(58)
 
 
 def reminder_time_handler(pm, name, desc):
@@ -156,8 +156,7 @@ def reminder_time_handler(pm, name, desc):
     )
 
     reminderTime = habit.getReminderTime()
-    print(reminderTime)
-    schedule.every(20).seconds.do(lambda: remind(habit, chat_id))
+    schedule.every().day.at(reminderTime).do(lambda: remind(habit, chat_id))
     Thread(target=schedule_checker).start()
     return
 
