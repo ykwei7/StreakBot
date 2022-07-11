@@ -19,17 +19,18 @@ from database import (
     clear_user_habits,
     get_all_habits,
 )
-from flask import Flask, request
 import schedule
 from threading import Thread
 from time import sleep
 import os
 import re
-
+from utils.logger import Logger
 
 load_dotenv("secret.env")
 API_KEY = os.getenv("API_KEY")
 bot = telebot.TeleBot(API_KEY)
+
+logger = Logger.config("Main")
 
 bot.set_my_commands(
     [
@@ -60,8 +61,8 @@ def start(message):
     add_user(str(user_id))
     chat_id = message.chat.id
     message = "Welcome to Streak-o!"
-
     bot.send_message(chat_id, message)
+    logger.info("Application initialized by " + str(user_id))
     return None
 
 
@@ -102,6 +103,7 @@ def handle_callback(call):
     elif data == functionsMapping["update"]:
         update_streak(user_id, chat_id)
     else:
+        logger.error("Function not found during /help callback")
         bot.send_message(chat_id, err_msg)
 
 

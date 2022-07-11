@@ -3,10 +3,13 @@ import psycopg2
 from backend.config import config
 from habit import Habit
 from datetime import date
+from utils.Logger import Logger
 
 SCHEMA = "streakBotDB"
 USERS = "users"
 HABITS = "habitsDB"
+
+logger = Logger.config("PostgreSQL")
 
 
 def connect():
@@ -15,20 +18,19 @@ def connect():
     try:
         # read connection parameters
         params = config()
-        print("Connecting to the PostgreSQL database...")
+        logger.info("Connecting to the PostgreSQL database...")
         conn = psycopg2.connect(params)
         cur = conn.cursor()
-        print("PostgreSQL database version:")
         cur.execute("SELECT version()")
         db_version = cur.fetchone()
-        print(db_version)
+        logger.info("PostgreSQL database version: " + db_version)
         cur.close()
     except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
+        logger.error(error)
     finally:
         if conn is not None:
             conn.close()
-            print("Database connection closed.")
+            logger.info("Database connection closed.")
 
 
 def view_all_users():
@@ -39,14 +41,14 @@ def view_all_users():
         query = f'SELECT * FROM "{SCHEMA}".{USERS}'
         cur.execute(query)
         result = cur.fetchall()
-        print("Query was executed successfully.")
+        logger.info("Retrieving all users")
         return result
     except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
+        logger.error(error)
     finally:
         if conn is not None:
             conn.close()
-            print("Database connection closed.")
+            logger.info("Database connection closed.")
 
 
 def add_user(userId: str) -> str:
@@ -64,9 +66,9 @@ def add_user(userId: str) -> str:
             {"userId": str(userId)},
         )
         conn.commit()
-        print("Query was executed successfully.")
+        logger.info("Adding user to database | " + str(userId))
     except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
+        logger.error(error)
 
 
 def add_habit_to_db(habit: Habit, userId: str):
@@ -74,13 +76,6 @@ def add_habit_to_db(habit: Habit, userId: str):
         params = config()
         conn = psycopg2.connect(params)
         cur = conn.cursor()
-        # paramList = [
-        #     '"habitName"',
-        #     '"desc"',
-        #     '"reminderTime"',
-        #     '"userID"',
-        # ]
-        # paramsListStr = ", ".join(param for param in paramList)
         cur.execute(
             'INSERT INTO "streakBotDB"."habitsDB" ("habitName", "desc", "reminderTime", "userID") VALUES (%(habitName)s, %(desc)s, %(reminderTime)s, %(userId)s)',
             {
@@ -91,9 +86,9 @@ def add_habit_to_db(habit: Habit, userId: str):
             },
         )
         conn.commit()
-        print("Query was executed successfully.")
+        logger.info("Adding habit to database | " + str(userId))
     except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
+        logger.error(error)
 
 
 def get_habits(userId: str):
@@ -108,9 +103,10 @@ def get_habits(userId: str):
             },
         )
         result = cur.fetchall()
+        logger.info("Reading habits from database | " + str(userId))
         return result
     except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
+        logger.error(error)
 
 
 def get_all_habits():
@@ -120,9 +116,10 @@ def get_all_habits():
         cur = conn.cursor()
         cur.execute('SELECT * FROM "streakBotDB"."habitsDB"')
         result = cur.fetchall()
+        logger.info("Reading all habits from database")
         return result
     except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
+        logger.error(error)
 
 
 def delete_habit_in_db(userId, habit):
@@ -138,10 +135,10 @@ def delete_habit_in_db(userId, habit):
             },
         )
         conn.commit()
-        print("Query was executed successfully")
+        logger.info(f"Deleting habit from database | habitId: {habit[0]}")
         return
     except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
+        logger.error(error)
     return
 
 
@@ -173,10 +170,10 @@ def update_streak(userId, habit, newVal):
             },
         )
         conn.commit()
-        print("Query was executed successfully")
+        logger.info(f"Updating streak of habitID: {habit[0]}")
         return
     except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
+        logger.error(error)
     return
 
 
@@ -192,26 +189,13 @@ def clear_user_habits(userId):
             },
         )
         conn.commit()
-        print("Query was executed successfully")
+        logger.info(f"Deleting all habits from userId: {str(userId)}")
         return
     except (Exception, psycopg2.DatabaseError) as error:
-        print(error)
+        logger.error(error)
     return
 
 
 if __name__ == "__main__":
-    # x = get_habits("612160086")
-    # print(x)
-    # print(type(Habit.createHabit("test", "testdesc", "08:00")))
-    # add_habit_to_db(Habit.createHabit("test", "testdesc", "08:00"), "123")
-    # x = get_habits("123")[0]
-    # print(get_habits("123"))
-    # update_habit("123", x, "numStreaks", 1)
-    # x = get_habits("123")[0]
-    # print(get_habits("123"))
-    # # print(get_habits("123"))
-    # add_user("123")
-    # print(get_habits("123"))
-    # print(get_habits("612160086"))
-    # print(view_all_users())
+    connect()
     pass
