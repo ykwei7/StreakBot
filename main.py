@@ -1,13 +1,14 @@
 import os
 import re
-from venv import create
-from dotenv import load_dotenv
 import telebot
+import os
+import re
+
+from dotenv import load_dotenv
 from telebot.types import (
     BotCommand,
     InlineKeyboardButton,
     InlineKeyboardMarkup,
-    InlineQueryResultCachedSticker,
 )
 from habit import Habit
 from database import (
@@ -19,16 +20,41 @@ from database import (
     clear_user_habits,
     get_all_habits,
 )
-import schedule
+# import schedule
 from threading import Thread
 from time import sleep
-import os
-import re
-from utils.logger import Logger
+from utils.Logger import Logger
+import pytz
+
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
+from apscheduler.executors.pool import ThreadPoolExecutor, ProcessPoolExecutor
+
+sg_timezone = pytz.timezone("Asia/Singapore")
 
 load_dotenv("secret.env")
 API_KEY = os.getenv("API_KEY")
+user = os.getenv("USER")
+password = os.getenv("PASSWORD")
+host = os.getenv("HOST")
+dbname = os.getenv("DB_NAME")
+port = os.getenv("PORT")
 bot = telebot.TeleBot(API_KEY)
+
+jobstore_url = f'postgresql://{user}:{password}@{host}:{port}/{dbname}'
+
+jobstores = {
+    'default': SQLAlchemyJobStore(url=jobstore_url)
+}
+executors = {
+    'default': ThreadPoolExecutor(20),
+    'processpool': ProcessPoolExecutor(5)
+}
+job_defaults = {
+    'coalesce': False,
+    'max_instances': 3
+}
+scheduler = BackgroundScheduler(daemon=True, jobstores=jobstores, executors=executors, job_defaults=job_defaults, timezone="Asia/Taipei")
 
 logger = Logger.config("Main")
 
@@ -103,7 +129,7 @@ def handle_callback(call):
     elif data == functionsMapping["update"]:
         update_streak(user_id, chat_id)
     else:
-        logger.error("Function not found during /help callback")
+        logger.warning("Function not found during /help callback")
         bot.send_message(chat_id, err_msg)
 
 
@@ -134,14 +160,15 @@ def desc_handler(pm, name):
     bot.register_next_step_handler(sent_msg, reminder_time_handler, name, desc)
 
 
-def schedule_checker():
-    while True:
-        schedule.run_pending()
-        sleep(58)
+# def schedule_checker():
+#     while True:
+#         schedule.run_pending()
+#         sleep(58)
 
 
 def reminder_time_handler(pm, name, desc):
     time = pm.text
+    user_id = pm.from_user.id
     chat_id = pm.chat.id
     regex = re.compile("^(2[0-3]|[01]?[0-9]):([0-5]?[0-9])$")
     if regex.match(time) is None:
@@ -158,8 +185,8 @@ def reminder_time_handler(pm, name, desc):
     )
 
     reminderTime = habit.getReminderTime()
-    schedule.every().day.at(reminderTime).do(lambda: remind(habit, chat_id))
-    Thread(target=schedule_checker).start()
+    unique_id = str(habit.id) + "-user-" + str(user_id)
+    scheduler.add_job(lambda: remind(habit, chat_id), 'interval', days = 1, start_date = f"2022-07-17 {reminderTime}:00", jobstore="default", replace_existing=True, id=unique_id, misfire_grace_time=30)
     return
 
 
@@ -285,5 +312,5 @@ def clear_all_handler(msg):
         )
 
 
-print("Telegram bot running")
+logger.info("Telegram bot running")
 bot.polling()
