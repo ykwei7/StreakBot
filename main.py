@@ -46,7 +46,7 @@ bot = telebot.TeleBot(API_KEY)
 
 # scheduler = BackgroundScheduler(daemon=True, jobstores=jobstores, executors=executors, timezone="Asia/Taipei")
 
-scheduler = BackgroundScheduler(executors=executors, timezone="Asia/Taipei")
+scheduler = BackgroundScheduler(timezone="Asia/Taipei")
 
 logger = Logger.config("Main")
 
