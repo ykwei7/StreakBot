@@ -1,8 +1,6 @@
 import os
 import re
 import telebot
-import os
-import re
 
 from dotenv import load_dotenv
 from telebot.types import (
