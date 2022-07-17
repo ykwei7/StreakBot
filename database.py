@@ -3,7 +3,7 @@ import psycopg2
 from backend.config import config
 from habit import Habit
 from datetime import date
-from utils.Logger import Logger
+from utils.logger import Logger
 
 SCHEMA = "streakBotDB"
 USERS = "users"

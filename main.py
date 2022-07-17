@@ -10,6 +10,7 @@ from telebot.types import (
     InlineKeyboardButton,
     InlineKeyboardMarkup,
 )
+from datetime import date
 from habit import Habit
 from database import (
     add_user,
@@ -23,7 +24,7 @@ from database import (
 # import schedule
 from threading import Thread
 from time import sleep
-from utils.Logger import Logger
+from utils.logger import Logger
 import pytz
 
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -50,11 +51,8 @@ executors = {
     'default': ThreadPoolExecutor(20),
     'processpool': ProcessPoolExecutor(5)
 }
-job_defaults = {
-    'coalesce': False,
-    'max_instances': 3
-}
-scheduler = BackgroundScheduler(daemon=True, jobstores=jobstores, executors=executors, job_defaults=job_defaults, timezone="Asia/Taipei")
+
+scheduler = BackgroundScheduler(daemon=True, jobstores=jobstores, executors=executors, timezone="Asia/Taipei")
 
 logger = Logger.config("Main")
 
@@ -62,10 +60,6 @@ bot.set_my_commands(
     [
         BotCommand("start", "Starts the bot"),
         BotCommand("help", "Get list of commands"),
-        # BotCommand("add", "Add a habit"),
-        # BotCommand("delete", "Delete a habit"),
-        # BotCommand("view", "View all habits"),
-        # BotCommand("update", "Update a habit"),
         BotCommand("clear", "Clears all habits"),
     ]
 )
@@ -159,13 +153,6 @@ def desc_handler(pm, name):
     )
     bot.register_next_step_handler(sent_msg, reminder_time_handler, name, desc)
 
-
-# def schedule_checker():
-#     while True:
-#         schedule.run_pending()
-#         sleep(58)
-
-
 def reminder_time_handler(pm, name, desc):
     time = pm.text
     user_id = pm.from_user.id
@@ -186,9 +173,12 @@ def reminder_time_handler(pm, name, desc):
 
     reminderTime = habit.getReminderTime()
     unique_id = str(habit.id) + "-user-" + str(user_id)
-    scheduler.add_job(lambda: remind(habit, chat_id), 'interval', days = 1, start_date = f"2022-07-17 {reminderTime}:00", jobstore="default", replace_existing=True, id=unique_id, misfire_grace_time=30)
+    currDate = date.today().strftime("%Y-%m-%d")
+    scheduler.add_job(remind, trigger='interval', days = 1, start_date=f"{currDate} {reminderTime}:00", jobstore="default", args=[habit, chat_id], replace_existing=True, id=unique_id, misfire_grace_time=30)
     return
 
+def sayHi():
+    logger.info('hi')
 
 @bot.message_handler(content_types=["text"])
 def view_habits(user_id, chat_id):
@@ -313,4 +303,5 @@ def clear_all_handler(msg):
 
 
 logger.info("Telegram bot running")
+scheduler.start()
 bot.polling()
