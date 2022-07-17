@@ -34,17 +34,19 @@ dbname = os.getenv("DB_NAME")
 port = os.getenv("PORT")
 bot = telebot.TeleBot(API_KEY)
 
-jobstore_url = f'postgresql://{user}:{password}@{host}:{port}/{dbname}'
+# jobstore_url = f'postgresql://{user}:{password}@{host}:{port}/{dbname}'
 
-jobstores = {
-    'default': SQLAlchemyJobStore(url=jobstore_url)
-}
-executors = {
-    'default': ThreadPoolExecutor(20),
-    'processpool': ProcessPoolExecutor(5)
-}
+# jobstores = {
+#     'default': SQLAlchemyJobStore(url=jobstore_url)
+# }
+# executors = {
+#     'default': ThreadPoolExecutor(20),
+#     'processpool': ProcessPoolExecutor(5)
+# }
 
-scheduler = BackgroundScheduler(daemon=True, jobstores=jobstores, executors=executors, timezone="Asia/Taipei")
+# scheduler = BackgroundScheduler(daemon=True, jobstores=jobstores, executors=executors, timezone="Asia/Taipei")
+
+scheduler = BackgroundScheduler(executors=executors, timezone="Asia/Taipei")
 
 logger = Logger.config("Main")
 
