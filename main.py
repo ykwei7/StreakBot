@@ -21,17 +21,11 @@ from database import (
     clear_user_habits,
     get_all_habits,
 )
-# import schedule
-from threading import Thread
-from time import sleep
 from utils.logger import Logger
-import pytz
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 from apscheduler.executors.pool import ThreadPoolExecutor, ProcessPoolExecutor
-
-sg_timezone = pytz.timezone("Asia/Singapore")
 
 load_dotenv("secret.env")
 API_KEY = os.getenv("API_KEY")
