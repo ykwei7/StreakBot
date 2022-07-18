@@ -267,12 +267,21 @@ def streak_handler(pm, data):
     )
 
 
-def remind(habit: Habit, chat_id):
-    bot.send_message(
-        chat_id,
-        f"Remember to do your habit today!\n\n{habit.toString()}",
-        parse_mode="Markdown",
-    )
+def remind(habit: Habit, chat_id=None, user_id=None):
+    if chat_id:
+        bot.send_message(
+            chat_id,
+            f"Remember to do your habit today!\n\n{habit.toString()}",
+            parse_mode="Markdown",
+        )
+    elif user_id:
+        bot.send_message(
+            user_id,
+            f"Remember to do your habit today!\n\n{habit.toString()}",
+            parse_mode="Markdown",
+        )
+    else:
+        logger.error('No ID found for reminder')
 
 
 @bot.message_handler(commands=["clear"])
@@ -295,7 +304,17 @@ def clear_all_handler(msg):
             msg.chat.id, "Habits were not cleared successfully. Try again!"
         )
 
+def set_all_jobs():
+    habits = get_all_habits()
+    for habit in habits:
+        # str(habit.id) + "-user-" + str(user_id)
+        unique_id = str(habit[0]) + "-user-" + habit[5]
+        currDate = date.today().strftime("%Y-%m-%d")
+        scheduler.add_job(remind, trigger='interval', days = 1, start_date=f"{currDate} {str(habit[3])}", jobstore="default", args=[habit, str(habit[5])], replace_existing=True, id=unique_id, misfire_grace_time=30)
+    
 
 logger.info("Telegram bot running")
 scheduler.start()
+scheduler.remove_all_jobs()
+set_all_jobs()
 bot.polling()
