@@ -306,13 +306,16 @@ def clear_all_handler(msg):
 
 def set_all_jobs():
     habits = get_all_habits()
+    if habits is None:
+        logger.info('No habits to reboot')
+        return
+    logger.info('Adding habits to scheduler..')
     for habit in habits:
-        # str(habit.id) + "-user-" + str(user_id)
-        unique_id = str(habit[0]) + "-user-" + habit[5]
+        user_id = str(habit[5])
+        habit = Habit.createHabitFromDB(habit)
+        unique_id = str(habit.id) + "-user-" + user_id
         currDate = date.today().strftime("%Y-%m-%d")
-        start_date=f"{currDate} {str(habit[3])}"
-        print(start_date)
-        scheduler.add_job(remind, trigger='interval', days = 1, start_date=f"{currDate} {str(habit[3])}", jobstore="default", args=[habit, None, str(habit[5])], replace_existing=True, id=unique_id, misfire_grace_time=30)
+        scheduler.add_job(remind, trigger='interval', days = 1, start_date=f"{currDate} {habit.reminderTime}", jobstore="default", args=[habit, None, user_id], replace_existing=True, id=unique_id, misfire_grace_time=30)
     
 
 logger.info("Telegram bot running")

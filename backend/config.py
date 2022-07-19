@@ -19,6 +19,6 @@ def config():
     #     raise Exception(
     #         "Section {0} not found in the {1} file".format(section, filename)
     #     )
-
-    DATABASE_URL = os.environ.get("DATABASE_URL")
+    DATABASE_URL = "postgres://ffcolanxbauwgg:1475cd723d146b6529f274676fdd6e323a7defdac7b36243031e0e056094357d@ec2-44-196-174-238.compute-1.amazonaws.com:5432/d7dtssdu0kitkl"
+    # DATABASE_URL = os.environ.get("DATABASE_URL")
     return DATABASE_URL
