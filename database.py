@@ -1,7 +1,7 @@
 #!/usr/bin/python
 import psycopg2
-from backend.config import config
-from habit import Habit
+from utils.config import config
+from habit.habit import Habit
 from datetime import date
 from utils.logger import Logger
 
@@ -97,13 +97,13 @@ def get_habits(userId: str):
         conn = psycopg2.connect(params)
         cur = conn.cursor()
         cur.execute(
-            'SELECT * FROM "streakBotDB"."habitsDB" WHERE "userID" = %(userId)s',
+            'SELECT * FROM "streakBotDB"."habitsDB" WHERE "userID" = %(userId)s ORDER BY "streakBotDB"."habitsDB"."habitID"',
             {
                 "userId": str(userId),
             },
         )
         result = cur.fetchall()
-        logger.info("Reading habits from database | " + str(userId))
+        logger.info("Reading habits from database for user:" + str(userId))
         return result
     except (Exception, psycopg2.DatabaseError) as error:
         logger.error(error)
