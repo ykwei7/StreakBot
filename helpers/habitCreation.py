@@ -1,11 +1,5 @@
 from database import (
-    add_user,
-    delete_habit_in_db,
-    get_habits,
     add_habit_to_db,
-    update_habit,
-    clear_user_habits,
-    get_all_habits,
 )
 import re
 from datetime import date

@@ -47,6 +47,10 @@ bot.set_my_commands(
         BotCommand("start", "Starts the bot"),
         BotCommand("help", "Get list of commands"),
         BotCommand("clear", "Clears all habits"),
+        BotCommand("add", "Create a habit"),
+        BotCommand("delete", "Delete a habit"),
+        BotCommand("view", "View all habits"),
+        BotCommand("update", "Update a habit"),
     ]
 )
 
@@ -161,6 +165,30 @@ def set_all_jobs():
         currDate = date.today().strftime("%Y-%m-%d")
         scheduler.add_job(remind, trigger='interval', days = 1, start_date=f"{currDate} {habit.reminderTime}", jobstore="default", args=[habit, None, user_id], replace_existing=True, id=unique_id, misfire_grace_time=30)
     
+
+    @bot.message_handler(commands=["view"])
+    def view(message):
+        chat_id = message.chat.id
+        user_id = message.from_user.id
+        habitRetrieval.view_habits(user_id, chat_id)
+    
+    @bot.message_handler(commands=["add"])
+    def add_habit(message):
+        chat_id = message.chat.id
+        habitCreation.add_habit(chat_id)
+    
+    @bot.message_handler(commands=["delete"])
+    def delete_habit(message):
+        chat_id = message.chat.id
+        user_id = message.from_user.id
+        habitDeletion.delete_habit(user_id, chat_id)
+
+    
+    @bot.message_handler(commands=["delete"])
+    def update_habit(message):
+        chat_id = message.chat.id
+        user_id = message.from_user.id
+        habitUpdate.update_streak(user_id, chat_id)
 
 logger.info("Telegram bot starting up")
 scheduler.start()

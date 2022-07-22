@@ -1,14 +1,11 @@
 from database import (
-    add_user,
-    delete_habit_in_db,
     get_habits,
-    add_habit_to_db,
     update_habit,
-    clear_user_habits,
-    get_all_habits,
 )
 import re
 from habit.habit import Habit
+
+from utils.messages import ERR_NO_HABITS_FOUND_MESSAGE, ERR_INVALID_INDEX_MESSAGE , ERR_INDEX_OUT_OF_BOUNDS_MESSAGE
 
 class HabitUpdate:
     def __init__(self, bot):
@@ -17,7 +14,7 @@ class HabitUpdate:
     def view_habits(self, user_id, chat_id):
         data = get_habits(str(user_id))
         if data is None or len(data) == 0:
-            self.bot.send_message(chat_id, "No habits found! Create a habit to start")
+            self.bot.send_message(chat_id, ERR_NO_HABITS_FOUND_MESSAGE)
             return None
         habits = [
             f"*#{str(i+1)}* " + Habit.formatStringFromDB(data[i]) for i in range(len(data))
@@ -47,13 +44,13 @@ class HabitUpdate:
 
         if regex.match(idx) is None:
             self.bot.send_message(
-                pm.chat.id, "This does not seem to be a valid number!\n\n Try again!"
+                pm.chat.id, ERR_INVALID_INDEX_MESSAGE
             )
             return
         elif int(idx) > len(data) or int(idx) <= 0:
             self.bot.send_message(
                 pm.chat.id,
-                "The index provided does not fall within the list!\n\n Try again!",
+                ERR_INDEX_OUT_OF_BOUNDS_MESSAGE,
             )
             return
         currentHabit = data[int(idx) - 1]
