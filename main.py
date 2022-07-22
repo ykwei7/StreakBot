@@ -37,9 +37,9 @@ bot = telebot.TeleBot(API_KEY)
 scheduler = BackgroundScheduler(timezone="Asia/Taipei")
 
 logger = Logger.config("Main")
-habitRetrieval = HabitRetrieval(bot)
+habitRetrieval = HabitRetrieval(bot, logger)
 habitCreation = HabitCreation(bot, scheduler, logger)
-habitUpdate = HabitUpdate(bot)
+habitUpdate = HabitUpdate(bot, logger)
 habitDeletion = HabitDeletion(bot, scheduler)
 
 bot.set_my_commands(
@@ -59,6 +59,7 @@ functionsMapping = {
     "add": "Add habit",
     "delete": "Delete habit",
     "update": "Update streak",
+    "reminder_update": 'update_habit'
 }
 
 
@@ -98,21 +99,26 @@ def handle_callback(call):
     user_id = call.from_user.id
     chat_id = call.message.chat.id
     data = call.data
-
-    if data == functionsMapping["view"]:
-        habitRetrieval.view_habits(user_id, chat_id)
-        return
-    elif data == functionsMapping["add"]:
-        habitCreation.add_habit(chat_id)
-        return
-    elif data == functionsMapping["delete"]:
-        habitDeletion.delete_habit(user_id, chat_id)
-        return
-    elif data == functionsMapping["update"]:
-        habitUpdate.update_streak(user_id, chat_id)
-    else:
-        logger.warning("Function not found during /help callback")
-        bot.send_message(chat_id, ERR_FUNC_NOT_FOUND_MESSAGE)
+    data_identifer = data.split()[0]
+    try:
+        if data == functionsMapping["view"]:
+            habitRetrieval.view_habits(user_id, chat_id)
+            return
+        elif data == functionsMapping["add"]:
+            habitCreation.add_habit(chat_id)
+            return
+        elif data == functionsMapping["delete"]:
+            habitDeletion.delete_habit(user_id, chat_id)
+            return
+        elif data == functionsMapping["update"]:
+            habitUpdate.update_streak(user_id, chat_id)
+        elif data_identifer == functionsMapping['reminder_update']:
+            habitUpdate.update_single_habit(user_id, chat_id, data)
+        else:
+            logger.warning("Function not found during /help callback")
+            bot.send_message(chat_id, ERR_FUNC_NOT_FOUND_MESSAGE)
+    except Exception as e:
+        logger.error(e)
 
 
 
@@ -137,16 +143,22 @@ def clear_all_handler(msg):
         )
 
 def remind(habit: Habit, chat_id=None, user_id=None):
+    buttons = [[InlineKeyboardButton(
+            'Completed', callback_data=f'update_habit {habit.id}' 
+        )]]
     if chat_id:
         bot.send_message(
             chat_id,
             f"Remember to do your habit today!\n\n{habit.toString()}",
+            reply_markup=InlineKeyboardMarkup(buttons),
             parse_mode="Markdown",
         )
+
     elif user_id:
         bot.send_message(
             user_id,
             f"Remember to do your habit today!\n\n{habit.toString()}",
+            reply_markup=InlineKeyboardMarkup(buttons),
             parse_mode="Markdown",
         )
     else:

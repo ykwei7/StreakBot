@@ -86,7 +86,14 @@ def add_habit_to_db(habit: Habit, userId: str):
             },
         )
         conn.commit()
+        cur.execute(
+            'SELECT "streakBotDB"."habitsDB"."habitID" FROM "streakBotDB"."habitsDB" WHERE "userID" = %(userId)s ORDER BY "streakBotDB"."habitsDB"."habitID" DESC LIMIT 1',
+            {
+                "userId": str(userId),
+            },
+        )
         logger.info("Adding habit to database | " + str(userId))
+        return cur.fetchall()[0][0]
     except (Exception, psycopg2.DatabaseError) as error:
         logger.error(error)
 
@@ -194,6 +201,24 @@ def clear_user_habits(userId):
     except (Exception, psycopg2.DatabaseError) as error:
         logger.error(error)
     return
+
+def get_habit_by_id(habitID: str):
+    try:
+        params = config()
+        conn = psycopg2.connect(params)
+        cur = conn.cursor()
+        cur.execute(
+            'SELECT * FROM "streakBotDB"."habitsDB" WHERE "streakBotDB"."habitsDB"."habitID" = %(habitID)s',
+            {
+                "habitID": str(habitID),
+            },
+        )
+        result = cur.fetchall()
+        logger.info(f"Retrieving habit: {str(habitID)}")
+    except (Exception, psycopg2.DatabaseError) as error:
+        logger.error(error)
+        return None
+    return result[0]
 
 
 if __name__ == "__main__":

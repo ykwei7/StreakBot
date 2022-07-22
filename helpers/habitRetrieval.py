@@ -7,8 +7,9 @@ from utils.messages import ERR_NO_HABITS_FOUND_MESSAGE
 from habit.habit import Habit
 
 class HabitRetrieval:
-    def __init__(self, bot):
+    def __init__(self, bot, logger):
         self.bot = bot
+        self.logger = logger
     
     def view_habits(self, user_id, chat_id):
         @self.bot.message_handler(content_types=["text"])
@@ -24,3 +25,4 @@ class HabitRetrieval:
             self.bot.send_message(chat_id, msg, parse_mode="Markdown")
             return data
         view_habits_helper()
+    

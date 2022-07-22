@@ -4,6 +4,12 @@ from database import (
 import re
 from datetime import date
 from habit.habit import Habit
+import telebot
+from telebot.types import (
+    BotCommand,
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+)
 
 class HabitCreation:
     def __init__(self, bot, scheduler, logger):
@@ -48,7 +54,8 @@ class HabitCreation:
             )
             return
         habit = Habit.createHabit(name, desc, time)
-        add_habit_to_db(habit, pm.from_user.id)
+        id = add_habit_to_db(habit, pm.from_user.id)
+        habit.id = id
         self.bot.send_message(
             pm.chat.id,
             f"Have created the following habit!\n\n{habit.toString()}",
@@ -62,17 +69,27 @@ class HabitCreation:
         return
     
     def remind(self, habit: Habit, chat_id=None, user_id=None):
-        if chat_id:
-            self.bot.send_message(
-                chat_id,
-                f"Remember to do your habit today!\n\n{habit.toString()}",
-                parse_mode="Markdown",
-            )
-        elif user_id:
-            self.bot.send_message(
-                user_id,
-                f"Remember to do your habit today!\n\n{habit.toString()}",
-                parse_mode="Markdown",
-            )
-        else:
-            self.logger.error('No ID found for reminder')
+        buttons = [[InlineKeyboardButton(
+                'Completed', callback_data=f'update_habit {habit.id}' 
+            )]]
+        try:
+            if chat_id:
+                self.bot.send_message(
+                    chat_id,
+                    f"Remember to do your habit today!\n\n{habit.toString()}",
+                    reply_markup=InlineKeyboardMarkup(buttons),
+                    parse_mode="Markdown",
+                )
+
+            elif user_id:
+                self.bot.send_message(
+                    user_id,
+                    f"Remember to do your habit today!\n\n{habit.toString()}",
+                    reply_markup=InlineKeyboardMarkup(buttons),
+                    parse_mode="Markdown",
+                )
+            else:
+                self.logger.error('No ID found for reminder')
+        except Exception as e:
+            self.logger.error(e)
+        
