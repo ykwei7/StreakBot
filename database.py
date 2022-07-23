@@ -104,7 +104,7 @@ def get_habits(userId: str):
         conn = psycopg2.connect(params)
         cur = conn.cursor()
         cur.execute(
-            'SELECT * FROM "streakBotDB"."habitsDB" WHERE "userID" = %(userId)s ORDER BY "streakBotDB"."habitsDB"."habitID"',
+            'SELECT * FROM "streakBotDB"."habitsDB" WHERE "userID" = %(userId)s ORDER BY "streakBotDB"."habitsDB"."reminderTime"',
             {
                 "userId": str(userId),
             },

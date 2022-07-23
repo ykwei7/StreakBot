@@ -12,16 +12,13 @@ from telebot.types import (
 )
 from database import (
     add_user,
-    delete_habit_in_db,
-    get_habits,
-    add_habit_to_db,
-    update_habit,
     clear_user_habits,
     get_all_habits,
 )
 from utils.messages import (
     WELCOME_MESSAGE,
-    ERR_FUNC_NOT_FOUND_MESSAGE
+    ERR_FUNC_NOT_FOUND_MESSAGE,
+    UPDATE_HABIT
 )
 from utils.logger import Logger
 from helpers.habitRetrieval import HabitRetrieval
@@ -59,7 +56,6 @@ functionsMapping = {
     "add": "Add habit",
     "delete": "Delete habit",
     "update": "Update streak",
-    "reminder_update": 'update_habit'
 }
 
 
@@ -144,7 +140,7 @@ def clear_all_handler(msg):
 
 def remind(habit: Habit, chat_id=None, user_id=None):
     buttons = [[InlineKeyboardButton(
-            'Completed', callback_data=f'update_habit {habit.id}' 
+            'Completed', callback_data=f'{UPDATE_HABIT} {habit.id}' 
         )]]
     if chat_id:
         bot.send_message(
@@ -194,7 +190,6 @@ def delete_habit(message):
     chat_id = message.chat.id
     user_id = message.from_user.id
     habitDeletion.delete_habit(user_id, chat_id)
-
 
 @bot.message_handler(commands=["delete"])
 def update_habit(message):
