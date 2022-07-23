@@ -17,3 +17,11 @@ ERR_NO_HABITS_FOUND_MESSAGE = "No habits found! Create a habit to start"
 ERR_INVALID_INDEX_MESSAGE = "This does not seem to be a valid number!\n\n Try again!"
 
 ERR_INDEX_OUT_OF_BOUNDS_MESSAGE = "The index provided does not fall within the list!\n\n Try again!"
+
+ERR_INVALID_OPERATION_MESSAGE = "Invalid operation provided.\n\n Try again!"
+
+UPDATE_HABIT = "update_habit"
+
+DELETE = "DELETE"
+
+UPDATE = "UPDATE"

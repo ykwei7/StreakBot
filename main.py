@@ -18,13 +18,16 @@ from database import (
 from utils.messages import (
     WELCOME_MESSAGE,
     ERR_FUNC_NOT_FOUND_MESSAGE,
-    UPDATE_HABIT
+    UPDATE_HABIT,
+    UPDATE,
+    DELETE
 )
 from utils.logger import Logger
 from helpers.habitRetrieval import HabitRetrieval
 from helpers.habitCreation import HabitCreation
 from helpers.habitDeletion import HabitDeletion
 from helpers.habitUpdate import HabitUpdate
+from helpers.helpers import view_concise_habits
 from apscheduler.schedulers.background import BackgroundScheduler
 
 load_dotenv("secret.env")
@@ -108,6 +111,10 @@ def handle_callback(call):
             return
         elif data == functionsMapping["update"]:
             habitUpdate.update_streak(user_id, chat_id)
+        elif data_identifer == UPDATE:
+            habitUpdate.handle_update(user_id, chat_id, data)
+        elif data_identifer == DELETE:
+            habitDeletion.handle_delete(user_id, chat_id, data)
         elif data_identifer == functionsMapping['reminder_update']:
             habitUpdate.update_single_habit(user_id, chat_id, data)
         else:
