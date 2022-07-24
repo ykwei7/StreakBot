@@ -20,8 +20,6 @@ ERR_INDEX_OUT_OF_BOUNDS_MESSAGE = "The index provided does not fall within the l
 
 ERR_INVALID_OPERATION_MESSAGE = "Invalid operation provided.\n\n Try again!"
 
-UPDATE_HABIT = "update_habit"
-
 DELETE = "DELETE"
 
 UPDATE = "UPDATE"

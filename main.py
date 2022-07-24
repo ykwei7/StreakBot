@@ -17,7 +17,6 @@ from database import (
 from utils.messages import (
     WELCOME_MESSAGE,
     ERR_FUNC_NOT_FOUND_MESSAGE,
-    UPDATE_HABIT,
     UPDATE,
     DELETE,
     UPDATE_STREAK
@@ -146,7 +145,7 @@ def clear_all_handler(msg):
 
 def remind(habit: Habit, chat_id=None, user_id=None):
     buttons = [[InlineKeyboardButton(
-            'Completed', callback_data=f'{UPDATE_HABIT} {habit.id}' 
+            'Completed', callback_data=f'{UPDATE_STREAK} {habit.id}' 
         )]]
     if chat_id:
         bot.send_message(
