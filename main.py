@@ -1,5 +1,4 @@
 import os
-import re
 import telebot
 
 from dotenv import load_dotenv
@@ -20,14 +19,14 @@ from utils.messages import (
     ERR_FUNC_NOT_FOUND_MESSAGE,
     UPDATE_HABIT,
     UPDATE,
-    DELETE
+    DELETE,
+    UPDATE_STREAK
 )
 from utils.logger import Logger
 from helpers.habitRetrieval import HabitRetrieval
 from helpers.habitCreation import HabitCreation
 from helpers.habitDeletion import HabitDeletion
 from helpers.habitUpdate import HabitUpdate
-from helpers.helpers import view_concise_habits
 from apscheduler.schedulers.background import BackgroundScheduler
 
 load_dotenv("secret.env")
@@ -115,7 +114,7 @@ def handle_callback(call):
             habitUpdate.handle_update(user_id, chat_id, data)
         elif data_identifer == DELETE:
             habitDeletion.handle_delete(user_id, chat_id, data)
-        elif data_identifer == functionsMapping['reminder_update']:
+        elif data_identifer == UPDATE_STREAK:
             habitUpdate.update_single_habit(user_id, chat_id, data)
         else:
             logger.warning("Function not found during /help callback")
@@ -198,7 +197,7 @@ def delete_habit(message):
     user_id = message.from_user.id
     habitDeletion.delete_habit(user_id, chat_id)
 
-@bot.message_handler(commands=["delete"])
+@bot.message_handler(commands=["update"])
 def update_habit(message):
     chat_id = message.chat.id
     user_id = message.from_user.id

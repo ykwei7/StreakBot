@@ -6,10 +6,11 @@ from datetime import date
 from habit.habit import Habit
 import telebot
 from telebot.types import (
-    BotCommand,
     InlineKeyboardButton,
     InlineKeyboardMarkup,
 )
+
+from utils.messages import UPDATE_STREAK
 
 class HabitCreation:
     def __init__(self, bot, scheduler, logger):
@@ -70,7 +71,7 @@ class HabitCreation:
     
     def remind(self, habit: Habit, chat_id=None, user_id=None):
         buttons = [[InlineKeyboardButton(
-                'Completed', callback_data=f'update_habit {habit.id}' 
+                f'Completed: {habit.name}', callback_data=f'{UPDATE_STREAK} {habit.id}' 
             )]]
         try:
             if chat_id:

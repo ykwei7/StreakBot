@@ -4,8 +4,6 @@ from database import (
 )
 
 from helpers.helpers import view_concise_habits
-
-import re
 from habit.habit import Habit
 from utils.messages import DELETE
 

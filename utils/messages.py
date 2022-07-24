@@ -1,5 +1,5 @@
 WELCOME_MESSAGE = """
-Welcome to Streak-O!
+Welcome to Streak-O! Build your habit today by creating a new habit to track.
 
 Commands:
 /help to display a list of options to start from
@@ -25,3 +25,5 @@ UPDATE_HABIT = "update_habit"
 DELETE = "DELETE"
 
 UPDATE = "UPDATE"
+
+UPDATE_STREAK = "UPDATE_STREAK"
