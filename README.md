@@ -1,15 +1,36 @@
-# streakbot
-Streakbot is a Telegram bot which aims to track habits and strengthen habit forming.
-With streakbot, reminders are sent to the user as per the frequency specified. Each habit 
-also stores the number of streaks or consecutive days (that the habit was kept for). 
+# Streakbot :fire:
 
-### Features
+This project aims to help stock investors have a better evaluation of stocks to purchase through the popularity and sentiment of the stock.
 
-1. Add habits
-2. Delete habits
-3. Edit habits
-4. Set reminders for habits
+## Table of Contents
+1. [Motivation](https://github.com/ykwei7/streakbot/blob/main/README.md#motivation)
+2. [Aim & User Stories](https://github.com/ykwei7/streakbot/blob/main/README.md#aim-and-user-stories)
+3. [Features and Timeline](https://github.com/ykwei7/streakbot/blob/main/README.md#features-and-timeline)
+4. [Tech Stack](https://github.com/ykwei7/streakbot/blob/main/README.md#tech-stack)
+5. [Milestone Updates](https://github.com/ykwei7/streakbot/blob/main/README.md#milestone-updates)
 
+
+## Motivation
+
+
+## Aim and User Stories
+
+
+## Features and Timeline
+
+###### Feature 1: Website
+
+###### Feature 2: Webscraper
+
+###### Feature 3: Sentiment Analysis
+
+## Milestone Updates
+
+Frontend
+
+Backend
+ 
+## Tech Stack
 
 
 
