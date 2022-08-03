@@ -23,7 +23,7 @@ For instance, given a scenario where you may hope to cultivate a habit of drinki
 
 A cue is then set into place when we receive this reminder the instant we wake up.
 
-<img2>
+<img width="214" alt="image" src="https://user-images.githubusercontent.com/60681330/182628192-49dffcb1-4b45-4ca8-86de-5a5ffbd60f38.png">
  
 Upon completion of this habit, we can click on "Completed" to mark this as completed for the day. Our streak is now up to 1, with 29 more days to go! And hopefully this serves as a visual craving to work towards the magical number of 30.
 
