@@ -35,11 +35,35 @@ Ultimately, the most important part about habit building is to be consistent and
 
 ## Features and Timeline
 
-###### Feature 1: Tracking of habits
+##### Feature 1: Tracking of habits
  
-###### Feature 2: Daily reminder for habits
+<img width="209" alt="image" src="https://user-images.githubusercontent.com/60681330/182632610-76485ade-145a-446c-89a5-7deba3018dc8.png">
 
-###### Feature 3: Streak tracking feature
+Users can view all habits and track their progress for each individual habit.
+<hr/>
+ 
+##### Feature 2: Daily reminder for habits
+ 
+<img width="214" alt="image" src="https://user-images.githubusercontent.com/60681330/182628192-49dffcb1-4b45-4ca8-86de-5a5ffbd60f38.png">
+ 
+Users are reminded daily based on the timing set for each habit.
+ 
+This is implemented via the `APScheduler` package where jobs are added to a scheduler. 
+ 
+```python
+self.scheduler.add_job(self.remind, trigger='interval', days = 1, 
+ start_date=f"{currDate} 08:00:00", jobstore="default", args=[habit, None, user_id],
+ replace_existing=True, id=unique_id, misfire_grace_time=30) 
+```
+ 
+Through this, the scheduler fires the `remind` function daily at `08:00 hours`.  
+<hr/>
+ 
+##### Feature 3: Streak tracking feature
+
+<img width="209" alt="image" src="https://user-images.githubusercontent.com/60681330/182632610-76485ade-145a-446c-89a5-7deba3018dc8.png">
+
+Users can track the streaks for each habit and provides a motivation to keep the streak going.
 
 ## Learning Points
  
