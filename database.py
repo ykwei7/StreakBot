@@ -11,6 +11,8 @@ HABITS = "habitsDB"
 
 logger = Logger.config("PostgreSQL")
 
+from utils.messages import STREAK, HABIT_NAME, REMINDER_TIME, DESC
+
 
 def connect():
     """Connect to the PostgreSQL database server"""
@@ -104,7 +106,7 @@ def get_habits(userId: str):
         conn = psycopg2.connect(params)
         cur = conn.cursor()
         cur.execute(
-            'SELECT * FROM "streakBotDB"."habitsDB" WHERE "userID" = %(userId)s ORDER BY "streakBotDB"."habitsDB"."reminderTime"',
+            'SELECT * FROM "streakBotDB"."habitsDB" WHERE "userID" = %(userId)s ORDER BY "streakBotDB"."habitsDB"."reminderTime", "streakBotDB"."habitsDB"."habitID"',
             {
                 "userId": str(userId),
             },
@@ -150,17 +152,99 @@ def delete_habit_in_db(userId, habit):
 
 
 def update_habit(userId: str, habit: Habit, field: str, newVal):
-    if field == "habitName":
-        pass
-    elif field == "desc":
-        pass
-    elif field == "reminderTime":
-        pass
-    elif field == "numStreaks":
-        update_streak(userId, habit, newVal)
-        return
-    pass
+    if field == HABIT_NAME:
+        habit = update_habit_name(userId, habit, newVal)
+    elif field == DESC:
+        habit = update_habit_desc(userId, habit, newVal)
+    elif field == REMINDER_TIME:
+        habit = update_habit_reminder_time(userId, habit, newVal)
+    elif field == STREAK:
+        habit = update_streak(userId, habit, newVal)
+    return habit
 
+def update_habit_name(userId: str, habit: Habit, newVal):
+    try:
+        params = config()
+        conn = psycopg2.connect(params)
+        cur = conn.cursor()
+        cur.execute(
+            'UPDATE "streakBotDB"."habitsDB" SET "habitName" = %(newVal)s, "lastUpdated" = %(now)s  WHERE "userID" = %(userId)s AND "habitID" = %(habitID)s',
+            {
+                "habitID": habit[0],
+                "userId": str(userId),
+                "newVal": newVal,
+                "now": date.today(),
+            },
+        )
+        conn.commit()
+        cur.execute(
+            'SELECT * FROM "streakBotDB"."habitsDB" WHERE "streakBotDB"."habitsDB"."habitID" = %(habitID)s',
+            {
+                "habitID": str(habit[0]),
+            },
+        )
+        result = cur.fetchall()
+        logger.info(f"Retrieving updated habit: {str(habit[0])}")
+        return result[0]
+    except (Exception, psycopg2.DatabaseError) as error:
+        logger.error(error)
+    return None
+
+def update_habit_desc(userId, habit, newVal):
+    try:
+        params = config()
+        conn = psycopg2.connect(params)
+        cur = conn.cursor()
+        cur.execute(
+            'UPDATE "streakBotDB"."habitsDB" SET "desc" = %(newVal)s, "lastUpdated" = %(now)s  WHERE "userID" = %(userId)s AND "habitID" = %(habitID)s',
+            {
+                "habitID": habit[0],
+                "userId": str(userId),
+                "newVal": newVal,
+                "now": date.today(),
+            },
+        )
+        conn.commit()
+        cur.execute(
+            'SELECT * FROM "streakBotDB"."habitsDB" WHERE "streakBotDB"."habitsDB"."habitID" = %(habitID)s',
+            {
+                "habitID": str(habit[0]),
+            },
+        )
+        result = cur.fetchall()
+        logger.info(f"Retrieving updated habit: {str(habit[0])}")
+        return result[0]
+    except (Exception, psycopg2.DatabaseError) as error:
+        logger.error(error)
+    return None
+
+def update_habit_reminder_time(userId, habit, newVal):
+    try:
+        params = config()
+        conn = psycopg2.connect(params)
+        cur = conn.cursor()
+        cur.execute(
+            'UPDATE "streakBotDB"."habitsDB" SET "reminderTime" = %(newVal)s, "lastUpdated" = %(now)s  WHERE "userID" = %(userId)s AND "habitID" = %(habitID)s',
+            {
+                "habitID": habit[0],
+                "userId": str(userId),
+                "newVal": newVal,
+                "now": date.today(),
+            },
+        )
+        conn.commit()
+        cur.execute(
+            'SELECT * FROM "streakBotDB"."habitsDB" WHERE "streakBotDB"."habitsDB"."habitID" = %(habitID)s',
+            {
+                "habitID": str(habit[0]),
+            },
+        )
+        result = cur.fetchall()
+        logger.info(f"Retrieving updated habit: {str(habit[0])}")
+        return result[0]
+    except (Exception, psycopg2.DatabaseError) as error:
+        logger.error(error)
+    return None
 
 def update_streak(userId, habit, newVal):
     try:
@@ -177,11 +261,18 @@ def update_streak(userId, habit, newVal):
             },
         )
         conn.commit()
-        logger.info(f"Updating streak of habitID: {habit[0]}")
-        return
+        cur.execute(
+            'SELECT * FROM "streakBotDB"."habitsDB" WHERE "streakBotDB"."habitsDB"."habitID" = %(habitID)s',
+            {
+                "habitID": str(habit[0]),
+            },
+        )
+        result = cur.fetchall()
+        logger.info(f"Retrieving updated habit: {str(habit[0])}")
+        return result[0]
     except (Exception, psycopg2.DatabaseError) as error:
         logger.error(error)
-    return
+    return None
 
 
 def clear_user_habits(userId):

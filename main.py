@@ -19,7 +19,8 @@ from utils.messages import (
     ERR_FUNC_NOT_FOUND_MESSAGE,
     UPDATE,
     DELETE,
-    UPDATE_STREAK
+    UPDATE_STREAK,
+    EDIT
 )
 from utils.logger import Logger
 from helpers.habitRetrieval import HabitRetrieval
@@ -37,18 +38,18 @@ scheduler = BackgroundScheduler(timezone="Asia/Taipei")
 logger = Logger.config("Main")
 habitRetrieval = HabitRetrieval(bot, logger)
 habitCreation = HabitCreation(bot, scheduler, logger)
-habitUpdate = HabitUpdate(bot, logger)
+habitUpdate = HabitUpdate(bot, scheduler, logger)
 habitDeletion = HabitDeletion(bot, scheduler)
 
 bot.set_my_commands(
     [
         BotCommand("start", "Starts the bot"),
         BotCommand("help", "Get list of commands"),
-        BotCommand("clear", "Clears all habits"),
         BotCommand("add", "Create a habit"),
         BotCommand("delete", "Delete a habit"),
         BotCommand("view", "View all habits"),
         BotCommand("update", "Update a habit"),
+        BotCommand("clear", "Clears all habits"),
     ]
 )
 
@@ -56,7 +57,7 @@ functionsMapping = {
     "view": "View all habits",
     "add": "Add habit",
     "delete": "Delete habit",
-    "update": "Update streak",
+    "update": "Update habit",
 }
 
 
@@ -115,6 +116,8 @@ def handle_callback(call):
             habitDeletion.handle_delete(user_id, chat_id, data)
         elif data_identifer == UPDATE_STREAK:
             habitUpdate.update_single_habit(user_id, chat_id, data)
+        elif data_identifer == EDIT:
+            habitUpdate.edit_habit(user_id, chat_id, data)
         else:
             logger.warning("Function not found during /help callback")
             bot.send_message(chat_id, ERR_FUNC_NOT_FOUND_MESSAGE)

@@ -1,3 +1,5 @@
+FIRE_EMOJI = '\xF0\x9F\x94\xA5'
+
 WELCOME_MESSAGE = """
 Welcome to Streak-O! Build your habit today by creating a new habit to track.
 
@@ -25,3 +27,13 @@ DELETE = "DELETE"
 UPDATE = "UPDATE"
 
 UPDATE_STREAK = "UPDATE_STREAK"
+
+STREAK = "numStreaks"
+
+EDIT = "EDIT"
+
+REMINDER_TIME = "reminderTime"
+
+DESC = "desc"
+
+HABIT_NAME = "habitName"

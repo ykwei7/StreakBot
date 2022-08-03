@@ -4,7 +4,6 @@ from database import (
 import re
 from datetime import date
 from habit.habit import Habit
-import telebot
 from telebot.types import (
     InlineKeyboardButton,
     InlineKeyboardMarkup,
@@ -39,7 +38,7 @@ class HabitCreation:
         desc = pm.text
         sent_msg = self.bot.send_message(
             pm.chat.id,
-            f"Got it! *{name}: {desc}*.\n\nSet a daily reminder! Please key it in an HH:MM format, for e.g 08:00",
+            f"Got it! *{name}: {desc}*.\n\nSet a daily reminder! Please key it in a 24-Hour HH:MM format, for e.g 08:00",
             parse_mode="Markdown",
         )
         self.bot.register_next_step_handler(sent_msg, self.reminder_time_handler, name, desc)
