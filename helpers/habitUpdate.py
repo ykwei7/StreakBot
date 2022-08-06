@@ -1,4 +1,3 @@
-from asyncio.log import logger
 from database import (
     update_habit,
     get_habit_by_id
@@ -95,7 +94,7 @@ class HabitUpdate:
             elif operation == REMINDER_TIME:
                 get_new_reminder_time(self, user_id, habitId)
         except Exception as e:
-            logger.error(e)
+            self.logger.error(e)
 
     def update_single_habit(self, user_id, chat_id, data):
         try:
@@ -108,6 +107,14 @@ class HabitUpdate:
                 f"Have updated the following habit:\n\n{habitToBeUpdated.toString()}",
                 parse_mode="Markdown",
             )
+            
+            if (habitToBeUpdated.streaks == 30):
+                self.bot.send_message(
+                    chat_id,
+                    f"Congrats\! You have reached the end of the 30 days\!\n\n" +
+                    "||There's no actual secret message but good job\! :\)||",
+                    parse_mode="MarkdownV2"
+                )
         except Exception as e:
             self.logger.error(e)
         
@@ -132,7 +139,7 @@ class HabitUpdate:
         try:
             self.bot.send_message(user_id, f'Have updated the following habit:\n\n{newHabit.toString()}', parse_mode="Markdown")
         except Exception as e:
-            logger.error(e)
+            self.logger.error(e)
         return
 
 def get_new_habit_name(self, user_id, habitId):

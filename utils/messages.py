@@ -3,6 +3,8 @@ FIRE_EMOJI = '\xF0\x9F\x94\xA5'
 WELCOME_MESSAGE = """
 Welcome to Streak-O! Build your habit today by creating a new habit to track.
 
+Work towards the end of the 30 days where you'll receive a cool surprise!
+
 Commands:
 /help to display a list of options to start from
 /add to start creating a habit
