@@ -65,7 +65,7 @@ Through this, the scheduler fires the `remind` function daily at `08:00 hours`.
 
 <img width="208" alt="image" src="https://user-images.githubusercontent.com/60681330/183230594-5ca301ae-ae6e-4557-986b-e5882d321dfb.png">
 
-Users can track the streaks for each habit and provides a motivation to keep the streak going.
+Users can track the streaks for each habit and the increasing streak sets a motivation to work towards the magical number of 30.
 
 ## Learning Points
  
