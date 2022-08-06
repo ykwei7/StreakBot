@@ -1,6 +1,6 @@
 # Streakbot :fire:
 
-Streakbot is a telegram bot aimed to build effective habits with the use of streaks (think snapchat!). It's often said that it takes 30 days to build a habit and this bot challenges that belief with a system to help you create and track habits daily. With a scheduler function in place, a reminder is set for users daily to perform their habits daily. See below for more pictures and how you can start your journey with Streakbot today! :)
+Streakbot is a telegram bot aimed to build effective habits with the use of streaks (think snapchat!). It's often said that it takes 30 days to build a habit and this bot challenges that belief with a system to help you create and track habits daily. With a scheduler function in place, a reminder is set for users daily to perform their habits daily. See below for more pictures and how you can [start](https://t.me/streakobot) your journey with Streakbot today! :)
 
 ## Table of Contents
 1. [Aim & User Stories](https://github.com/ykwei7/streakbot/blob/main/README.md#aim-and-user-stories)
@@ -33,7 +33,7 @@ Upon hitting the 30 day mark, we are then rewarded with a special celebratory me
 
 <img width="218" alt="image" src="https://user-images.githubusercontent.com/60681330/183231092-2cced0fe-6c5e-44a8-b118-d760d9a632ce.png">
  
-Ultimately, the most important part about habit building is to be consistent and Streakbot makes this process seamless and rewarding for you. Unsure about what to cultivate? Here's a quick [article](https://dariusforoux.com/habits-with-huge-return-on-life/) to get you started so create a habit, and start your journey today! 
+Ultimately, the most important part about habit building is to be consistent and Streakbot makes this process seamless and rewarding for you. Unsure about what to cultivate? Here's a quick [article](https://dariusforoux.com/habits-with-huge-return-on-life/) to get you started so create a habit, and [start](https://t.me/streakobot) your journey today! 
 
 ## Features and Timeline
 
